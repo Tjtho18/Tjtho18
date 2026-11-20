@@ -1,16 +1,21 @@
-Under-desk bracket for Lenovo Legion Slim 140W charger (122 x 62 x 26.5 mm)
+Under-desk bracket for Lenovo Legion Slim 140W charger (GX21M50625, 122 x 62 x 26.5 mm)
 
 Files
-  bracket.stl   - ready to slice
-  bracket.scad  - OpenSCAD source; all dimensions are top-level parameters
+  bracket.stl     - ready to slice (manifold, single solid, no supports needed)
+  bracket.scad    - OpenSCAD source; all dimensions are top-level parameters
+  ENGINEERING.md  - weak-point review, thermal analysis, print settings, install, test
 
-Size: 122.0 x 82.97 x 11.31 mm (same length as the charger). Manifold, single solid.
+Size: 122.0 x 87.2 x 16.0 mm. Charger sits on six posts with a 12 mm open air gap.
 
-Strap zones: slots centered with 11.55 mm of solid lip on each side, rounded
-slot ends, 4 mm lips, and desk-side gussets flanking every slot.
+Print (details in ENGINEERING.md)
+  Material: ASA (PETG only if the charger case stays under ~50 C at full load)
+  Flat plate down, no supports. 0.2 mm layers, 5 perimeters (Arachne), 40%+ infill.
+  ASA: 255-260 C nozzle, 100-110 C bed, enclosure, fan off first 3 layers, 5-8 mm brim.
+  Deburr the strap slot mouths after printing.
 
-Printing
-  Material: PETG or ASA (not PLA - charger heat)
-  Orientation: flat plate down (desk side on the bed), no supports
-  Mount: 4x #8 flat-head (82 deg) wood screws (between the ribs, under the charger);
-         two 1" straps through the lip slots
+Install
+  4x #8 pan-head + washer (or truss-head) wood screws: 5/8" for an 18 mm desk,
+  3/4" for 22 mm+. Pilot 2.4-2.8 mm (particleboard/MDF) or 3.2 mm (hardwood).
+  Screw the bracket up first, then strap the charger on with two non-elastic
+  1" straps rated 25 lb+, threaded out through a slot and around each lip tip.
+  Keep the hook-and-loop overlap off the hot case. Snug, don't crank.

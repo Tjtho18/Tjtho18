@@ -30,3 +30,36 @@ if __name__ == "__main__":
         check(12, 4, 4, 4, 27.4, T, "current  (Ls 12, slot centered)")
         check(16, 4, 4, 4, 27.4, T, "proposed (Ls 16, slot 4 mm from root)")
         print()
+
+
+def section(P):
+    """Area, centroid and section moduli of a polygon (local y = depth in lip plane, z = thickness)."""
+    n = len(P); A = cx = cz = 0.0
+    for i in range(n):
+        (x0, y0), (x1, y1) = P[i], P[(i + 1) % n]
+        c = x0 * y1 - x1 * y0; A += c; cx += (x0 + x1) * c; cz += (y0 + y1) * c
+    A /= 2; cx /= 6 * A; cz /= 6 * A
+    Iz = Iy = 0.0
+    for i in range(n):
+        (x0, y0), (x1, y1) = P[i], P[(i + 1) % n]
+        x0 -= cx; x1 -= cx; y0 -= cz; y1 -= cz; c = x0 * y1 - x1 * y0
+        Iz += (y0 * y0 + y0 * y1 + y1 * y1) * c; Iy += (x0 * x0 + x0 * x1 + x1 * x1) * c
+    xs = [p[0] for p in P]; zs = [p[1] for p in P]
+    return A, (Iy / 12) / max(cx - min(xs), max(xs) - cx), (Iz / 12) / max(cz - min(zs), max(zs) - cz)
+
+
+def current_design(Ls=16, lip_t=5, slot_off=4, slot_gap=4, slot_len=27.4, c=1.0, cu=0.3):
+    y0 = slot_off + slot_gap
+    P = [(y0 + cu, 0), (Ls - c, 0), (Ls, c), (Ls, lip_t - c), (Ls - c, lip_t), (y0 + c, lip_t), (y0, lip_t - c), (y0, cu)]
+    A, Zin, Zout = section(P)
+    print(f"As built (chamfered tip strip {Ls - y0} x {lip_t} mm): area {A:.1f} mm^2, Z {Zin:.1f} / {Zout:.1f} mm^3")
+    for T in (30, 60, 130):
+        M = 2 * T / slot_len * slot_len**2 / 12
+        s = math.cos(math.radians(45)) * M * (1 / Zin + 1 / Zout)
+        print(f"   T = {T:>4.0f} N -> {s:5.1f} MPa (gussets fixing ends), {1.5 * s:5.1f} MPa (no end fixity)")
+    print("   Compare: printed ASA tensile 37-44 MPa XY (data sheets); less when warm.")
+
+
+if __name__ == "__main__":
+    print()
+    current_design()

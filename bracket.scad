@@ -30,6 +30,8 @@ Wp  = brick_w + 2*side_clr; // flat plate width (66)
 Ls    = 16;  ang = 45;      // lip width, angle away from desk
 lip_t = 5;                  // lip thickness
 root_r = 3;                 // fillet radius, inside corner where lip meets plate (charger side)
+edge_c = 1;                 // chamfer on strap-bearing edges that print cleanly
+edge_c_under = 0.3;         // desk-side slot mouth: kept small so its downward ledge (~0.42 mm) is under one line width
 
 // ---- Center lip vent (oval) ----
 vent_d = 5;  vent_x = 8;    // two d=vent_d circles at ±vent_x, hulled
@@ -56,7 +58,7 @@ gusset_x = [ for (sx = [-1, 1]) for (x = [strap_x - slot_len/2 - gusset_t/2,
 // "counterbore": flat seat for a pan/truss/washer-head screw (recommended: no wedge load on the
 // plastic, slower clamp-load loss when warm). "countersink": 82° seat for flat-head screws.
 head_style = "counterbore";
-screw_d = 4.5;
+screw_d = 4.9;              // #8 = 4.17 mm; FDM holes print ~0.2-0.3 mm small, so 4.9 lands ~4.6-4.7
 cb_d = 11;  cb_depth = 1.5;          // fits #8 pan head + #8 washer, or #8 truss head
 head_d = 9; cs_angle = 82;           // countersink option
 cs_h    = (head_d - screw_d) / 2 / tan(cs_angle/2);
@@ -108,12 +110,27 @@ module root_fillet() {
     }
 }
 
+// Slot through the lip with chamfered mouths so the strap doesn't run over sharp edges.
+module strap_slot() {
+  translate([0, 0, -1]) stadium(slot_len, slot_gap, lip_t + 2);
+  hull() {                                          // inner (charger-side) mouth
+    translate([0, 0, lip_t - edge_c]) stadium(slot_len, slot_gap, 0.01);
+    translate([0, 0, lip_t]) stadium(slot_len + 2*edge_c, slot_gap + 2*edge_c, 0.01);
+  }
+  hull() {                                          // outer (desk-side) mouth
+    translate([0, 0, edge_c_under]) stadium(slot_len, slot_gap, 0.01);
+    translate([0, 0, -0.01]) stadium(slot_len + 2*edge_c_under, slot_gap + 2*edge_c_under, 0.01);
+  }
+}
+
 module lip() {
   translate([0, Wp/2, 0]) rotate([ang, 0, 0])
   difference() {
-    translate([-L/2, 0, 0]) cube([L, Ls, lip_t]);
+    // lip cross-section with the tip edges chamfered (the strap wraps around the tip)
+    translate([-L/2, 0, 0]) rotate([90, 0, 90]) linear_extrude(L)
+      polygon([[0, 0], [Ls - edge_c, 0], [Ls, edge_c], [Ls, lip_t - edge_c], [Ls - edge_c, lip_t], [0, lip_t]]);
     for (sx = [-1, 1])
-      translate([sx*strap_x, slot_off + slot_gap/2, -1]) stadium(slot_len, slot_gap, lip_t + 2);
+      translate([sx*strap_x, slot_off + slot_gap/2, 0]) strap_slot();
     translate([0, slot_off + slot_gap/2, -1]) stadium(2*vent_x + vent_d, vent_d, lip_t + 2);
   }
   root_fillet();
