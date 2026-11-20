@@ -4,7 +4,7 @@ T = 0;
 brick_l = 122; brick_w = 62; brick_h = 26.5;  // Lenovo spec, GX21M50625
 edge_r  = 3;          // corner rounding (stays inside the spec box)
 show_bracket = true;
-rest_z  = 7;          // top of cooling ribs (t + rib_h in bracket.scad)
+rest_z  = 16;         // charger rest height: t + stand_h in bracket.scad
 drop_h  = 45;         // starting height above rest
 drop_end = 0.35;      // fraction of the loop when the charger lands
 
