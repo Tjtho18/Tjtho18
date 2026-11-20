@@ -5,7 +5,8 @@
 brick_l = 122;  brick_w = 62;
 side_clr = 2;               // clearance per long side
 t = 3;                      // wall / plate thickness
-L   = 148;                  // plate length
+end_clr = 0;                // extra plate length past each charger end
+L   = brick_l + 2*end_clr;  // plate length (122)
 Wp  = brick_w + 2*side_clr; // flat plate width (66)
 
 // ---- Side lips ----
@@ -17,14 +18,22 @@ slot_gap = 4; strap_x = 35;
 
 // ---- Lip vents ----
 vent_d = 5;  vent_x = 8;              // center oval: two d=vent_d circles at ±vent_x, hulled
-win_x = 60;  win_l = 12;  win_w = 5;  // outer vent windows
+win_l = 6;  win_w = 5;                // outer vent windows,
+slot_end = strap_x + (strap_w + strap_clr)/2;
+win_x = (slot_end + L/2) / 2;         // centered between strap slot and lip end
 
 // ---- Screw holes (#8 countersunk) ----
-screw_d = 4.5; head_d = 9; hole_x = 68; hole_y = 20;
+screw_d = 4.5; head_d = 9;
+hole_x = 40;                // under the charger, inboard of the rib ends
 
 // ---- Cooling ribs ----
 rib_h = 3;  rib_w = 3;  rib_len = 110;
 rib_y = [-24, -8, 8, 24];
+hole_y = (rib_y[2] + rib_y[3]) / 2;   // centered in the air channel between ribs 3 and 4 (and mirror)
+
+assert(rib_y[3] - rib_y[2] - rib_w >= head_d + 2, "screw head doesn't fit between ribs");
+assert(hole_x + head_d/2 <= rib_len/2, "screw head past rib ends");
+assert(win_x + win_l/2 < L/2 - 1, "vent window runs off the lip end");
 
 $fn = 48;
 
