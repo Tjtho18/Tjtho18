@@ -1,7 +1,9 @@
 // Turntable animation: charger lowers onto the bracket ribs while the view rotates.
 // Frames are rendered by render.sh, which sets T (0..1) and the camera per frame.
 T = 0;
-brick_l = 122; brick_w = 62; brick_h = 26.5;
+brick_l = 122; brick_w = 62; brick_h = 26.5;  // Lenovo spec, GX21M50625
+edge_r  = 3;          // corner rounding (stays inside the spec box)
+show_bracket = true;
 rest_z  = 6;          // top of cooling ribs (t + rib_h)
 drop_h  = 45;         // starting height above rest
 drop_end = 0.35;      // fraction of the loop when the charger lands
@@ -10,13 +12,14 @@ drop_end = 0.35;      // fraction of the loop when the charger lands
 p = min(T / drop_end, 1);
 z = rest_z + drop_h * pow(1 - p, 3);
 
-color([0.95, 0.45, 0.10]) import("../bracket.stl");
+if (show_bracket) color([0.95, 0.45, 0.10]) import("../bracket.stl");
 
 color([0.15, 0.15, 0.17])
   translate([-brick_l/2, -brick_w/2, z])
     minkowski() {
-      translate([3, 3, 1]) cube([brick_l-6, brick_w-6, brick_h-2]);
-      sphere(r=3, $fn=16);
+      translate([edge_r, edge_r, edge_r])
+        cube([brick_l-2*edge_r, brick_w-2*edge_r, brick_h-2*edge_r]);
+      sphere(r=edge_r, $fn=16);
     }
 // logo-ish label strip on top of charger
 color([0.55, 0.55, 0.6])
